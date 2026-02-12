@@ -1,6 +1,5 @@
 import os
 import sys
-import importlib.util
 
 print("Python Executable:", sys.executable)
 print("Python Version:", sys.version)
