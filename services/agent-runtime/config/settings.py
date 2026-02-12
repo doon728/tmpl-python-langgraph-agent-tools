@@ -10,19 +10,17 @@ def load_config(env: str = None) -> Dict[str, Any]:
     """
     Load configuration based on environment with multiple import attempts.
     """
-    yaml = None
-    
-    # Multiple import methods
+    # Attempt multiple import methods
     try:
         import yaml
-        print("✅ PyYAML imported via standard import")
+        print("✅ PyYAML imported successfully")
     except ImportError:
         try:
             spec = importlib.util.find_spec('yaml')
             if spec is not None:
+                print(f"PyYAML spec found: {spec}")
                 yaml = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(yaml)
-                print("✅ PyYAML imported via importlib")
             else:
                 print("❌ No PyYAML spec found")
                 raise ImportError("PyYAML module not found")
