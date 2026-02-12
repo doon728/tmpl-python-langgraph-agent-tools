@@ -9,20 +9,27 @@ print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
 
 # Comprehensive yaml import diagnostics
-try:
-    import yaml
-    print("✅ PyYAML imported successfully")
-    print("PyYAML version:", yaml.__version__)
-    print("PyYAML file location:", yaml.__file__)
-except ImportError as e:
-    print(f"❌ YAML Import Error: {e}")
-    
-    # Additional import diagnostics
+def check_yaml_import():
     try:
-        spec = importlib.util.find_spec('yaml')
-        print("PyYAML spec:", spec)
-    except Exception as import_error:
-        print(f"Import spec error: {import_error}")
+        import yaml
+        print("✅ PyYAML imported successfully")
+        print("PyYAML version:", yaml.__version__)
+        print("PyYAML file location:", yaml.__file__)
+        return True
+    except ImportError as e:
+        print(f"❌ YAML Import Error: {e}")
+        
+        # Additional import diagnostics
+        try:
+            spec = importlib.util.find_spec('yaml')
+            print("PyYAML spec:", spec)
+        except Exception as import_error:
+            print(f"Import spec error: {import_error}")
+        
+        return False
+
+# Verify yaml import
+yaml_available = check_yaml_import()
 
 from config.settings import load_config, get_config
 
