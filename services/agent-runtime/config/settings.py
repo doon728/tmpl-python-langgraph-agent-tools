@@ -2,23 +2,22 @@ import os
 import importlib.util
 from typing import Dict, Any
 
-def is_yaml_available():
-    return importlib.util.find_spec('yaml') is not None
-
-class ConfigurationError(Exception):
-    """Raised when configuration cannot be loaded"""
-    pass
-
 def load_config(env: str = None) -> Dict[str, Any]:
     """
     Load configuration based on environment.
     """
-    # Lazy import of yaml
+    # Explicitly try to import yaml
     try:
         import yaml
     except ImportError:
-        print("❌ Could not import PyYAML")
-        raise ConfigurationError("PyYAML is not installed")
+        # Print detailed diagnostic information
+        print("Import Diagnostic Information:")
+        print("Python Path:", os.sys.path)
+        print("Attempting to locate yaml via importlib:")
+        yaml_spec = importlib.util.find_spec('yaml')
+        print("PyYAML spec:", yaml_spec)
+        
+        raise ImportError("Could not import PyYAML. Please verify installation.")
     
     if env is None:
         env = os.environ.get('AGENT_ENV', 'dev')
