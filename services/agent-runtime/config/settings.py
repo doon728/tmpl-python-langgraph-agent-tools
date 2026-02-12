@@ -1,29 +1,26 @@
 import os
 import yaml
 from typing import Dict, Any
-from functools import lru_cache
 
 class ConfigurationError(Exception):
     """Raised when configuration cannot be loaded"""
     pass
 
-@lru_cache(maxsize=None)
 def load_config(env: str = None) -> Dict[str, Any]:
     """
     Load configuration based on environment.
     """
-    print(f"ENV parameter: {env}")
-    print(f"AGENT_ENV: {os.getenv('AGENT_ENV')}")
-    
+    # Explicitly use environment variable if not provided
     if env is None:
-        env = os.getenv('AGENT_ENV', 'dev')
+        env = os.environ.get('AGENT_ENV', 'dev')
     
     config_path = os.path.join(
         os.path.dirname(__file__), 
         f"{env}.yaml"
     )
     
-    print(f"Attempting to load config from: {config_path}")
+    print(f"Loading config from: {config_path}")
+    print(f"Current environment: {env}")
     
     try:
         with open(config_path, 'r') as config_file:
