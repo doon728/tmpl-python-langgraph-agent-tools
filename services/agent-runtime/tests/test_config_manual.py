@@ -1,14 +1,9 @@
-import sys
 import os
+import sys
+import yaml
 
 print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
-
-try:
-    import yaml
-    print("PyYAML successfully imported")
-except ImportError as e:
-    print(f"PyYAML import error: {e}")
 
 from config.settings import load_config, get_config
 
