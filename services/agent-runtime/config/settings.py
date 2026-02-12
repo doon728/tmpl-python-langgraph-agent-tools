@@ -8,29 +8,27 @@ class ConfigurationError(Exception):
 
 def load_config(env: str = None) -> Dict[str, Any]:
     """
-    Load configuration based on environment with robust import handling.
+    Load configuration based on environment with multiple import attempts.
     """
-    # Comprehensive yaml import diagnostics
+    yaml = None
+    
+    # Multiple import methods
     try:
         import yaml
-        print(f"✅ PyYAML imported successfully from {yaml.__file__}")
-    except ImportError as e:
-        print(f"❌ Standard import failed: {e}")
-        
+        print("✅ PyYAML imported via standard import")
+    except ImportError:
         try:
-            # Alternative import method
             spec = importlib.util.find_spec('yaml')
             if spec is not None:
-                print(f"PyYAML spec found: {spec}")
                 yaml = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(yaml)
                 print("✅ PyYAML imported via importlib")
             else:
                 print("❌ No PyYAML spec found")
-                raise
-        except Exception as alt_error:
-            print(f"❌ Alternative import method failed: {alt_error}")
-            raise ConfigurationError(f"Could not import PyYAML: {alt_error}")
+                raise ImportError("PyYAML module not found")
+        except Exception as e:
+            print(f"❌ Import error: {e}")
+            raise ConfigurationError(f"Could not import PyYAML: {e}")
     
     if env is None:
         env = os.environ.get('AGENT_ENV', 'dev')
