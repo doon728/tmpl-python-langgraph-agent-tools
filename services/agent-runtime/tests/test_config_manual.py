@@ -1,6 +1,6 @@
 import os
 import sys
-import yaml
+import yaml  # noqa: F401
 
 print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
