@@ -33,25 +33,3 @@ def load_config(env: str = None) -> Dict[str, Any]:
         raise ConfigurationError(f"Configuration file for {env} not found")
     except yaml.YAMLError as e:
         raise ConfigurationError(f"Error parsing configuration: {e}")
-
-def get_config(key: str, default=None):
-    """
-    Retrieve a configuration value, with optional default.
-    
-    Args:
-        key: Dot-separated configuration key
-        default: Default value if key not found
-    
-    Returns:
-        Configuration value
-    """
-    config = load_config()
-    
-    # Traverse nested dictionary
-    for k in key.split('.'):
-        if isinstance(config, dict) and k in config:
-            config = config[k]
-        else:
-            return default
-    
-    return config
