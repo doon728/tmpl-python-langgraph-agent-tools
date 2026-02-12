@@ -1,5 +1,6 @@
 import os
 import sys
+import importlib.util
 
 # Add parent directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -18,7 +19,6 @@ except ImportError as e:
     
     # Additional import diagnostics
     try:
-        import importlib.util
         spec = importlib.util.find_spec('yaml')
         print("PyYAML spec:", spec)
     except Exception as import_error:
