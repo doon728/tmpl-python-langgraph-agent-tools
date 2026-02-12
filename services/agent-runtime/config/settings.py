@@ -10,7 +10,6 @@ def load_config(env: str = None) -> Dict[str, Any]:
     """
     Load configuration based on environment.
     """
-    # Explicitly use environment variable if not provided
     if env is None:
         env = os.environ.get('AGENT_ENV', 'dev')
     
@@ -19,21 +18,12 @@ def load_config(env: str = None) -> Dict[str, Any]:
         f"{env}.yaml"
     )
     
-    print(f"Loading config from: {config_path}")
-    print(f"Current environment: {env}")
-    print(f"Current working directory: {os.getcwd()}")
-    print(f"Files in config directory: {os.listdir(os.path.dirname(__file__))}")
-    
     try:
         with open(config_path, 'r') as config_file:
-            config = yaml.safe_load(config_file)
-            print(f"Loaded config: {config}")
-            return config
+            return yaml.safe_load(config_file)
     except FileNotFoundError:
-        print(f"Configuration file {config_path} not found")
         raise ConfigurationError(f"Configuration file for {env} not found")
     except yaml.YAMLError as e:
-        print(f"YAML parsing error: {e}")
         raise ConfigurationError(f"Error parsing configuration: {e}")
 
 def get_config(key: str, default=None):
