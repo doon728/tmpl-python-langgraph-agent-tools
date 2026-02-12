@@ -1,5 +1,5 @@
 import logging
-from config.settings import load_config, get_config
+from config.settings import load_config
 
 def setup_logging():
     """
@@ -15,7 +15,6 @@ def setup_logging():
         level=log_level,
         format=log_config['format']
     )
-
     # Create a logger for the application
     logger = logging.getLogger('agent_runtime')
     return logger
