@@ -9,20 +9,22 @@ print("Python Version:", sys.version)
 print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
 
-# Check installed packages
-try:
-    import pkg_resources
-    installed_packages = [d for d in pkg_resources.working_set]
-    print("Installed Packages:", [str(p) for p in installed_packages])
-except ImportError:
-    print("Could not import pkg_resources")
-
-# Try importing yaml
+# Comprehensive import diagnostics
 try:
     import yaml
     print("✅ PyYAML imported successfully")
+    print("PyYAML version:", yaml.__version__)
+    print("PyYAML file location:", yaml.__file__)
 except ImportError as e:
     print(f"❌ YAML Import Error: {e}")
+    
+    # Additional import diagnostics
+    try:
+        import importlib.util
+        spec = importlib.util.find_spec('yaml')
+        print("PyYAML spec:", spec)
+    except Exception as import_error:
+        print(f"Import spec error: {import_error}")
 
 from config.settings import load_config, get_config
 
