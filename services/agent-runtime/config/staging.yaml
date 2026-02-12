@@ -12,5 +12,5 @@ observability:
   sampling_rate: 0.5
 
 secrets:
-  kb_api_key: ${STAGING_KB_API_KEY}
-  db_connection: ${STAGING_DB_CONNECTION}
+  kb_api_key: staging_placeholder_key
+  db_connection: staging_db_connection
