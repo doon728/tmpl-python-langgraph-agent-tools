@@ -9,6 +9,8 @@ package-mode = false
 requests = "^2.32.0"
 python = "^3.11"
 langgraph = "*"
+pyyaml = "^6.0"
+python-dotenv = "^1.0.0"  # For managing environment variables
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
@@ -21,7 +23,5 @@ line-length = 100
 testpaths = ["tests"]
 pythonpath = ["."]
 
-[tool.poetry.dependencies]
-pyyaml = "^6.0"
-python-dotenv = "^1.0.0"  # For managing environment variables
+
 
