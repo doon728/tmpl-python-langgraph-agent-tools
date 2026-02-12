@@ -3,6 +3,10 @@ import sys
 import importlib.util
 from typing import Dict, Any
 
+class ConfigurationError(Exception):
+    """Raised when configuration cannot be loaded"""
+    pass
+
 def load_config(env: str = None) -> Dict[str, Any]:
     """
     Load configuration based on environment.
@@ -30,7 +34,7 @@ def load_config(env: str = None) -> Dict[str, Any]:
         except Exception as e:
             print(f"❌ Failed to import PyYAML: {e}")
     
-    raise ImportError("Could not import PyYAML. Please verify installation.")
+    raise ConfigurationError("Could not import PyYAML. Please verify installation.")
 
 def _load_config_impl(env: str = None) -> Dict[str, Any]:
     """
