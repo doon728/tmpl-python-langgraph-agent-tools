@@ -4,16 +4,19 @@ import sys
 # Add parent directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
-print("Environment Variables:", os.environ)
 
+# Comprehensive yaml import diagnostics
 try:
-    import yaml  # noqa: F401
-    print("PyYAML successfully imported")
+    import yaml
+    print("✅ PyYAML imported successfully")
+    print("PyYAML version:", yaml.__version__)
+    print("PyYAML file location:", yaml.__file__)
 except ImportError as e:
-    print(f"YAML Import Error: {e}")
-    print("Attempting to diagnose PyYAML installation")
+    print(f"❌ YAML Import Error: {e}")
     
+    # Additional import diagnostics
     try:
         import importlib.util
         spec = importlib.util.find_spec('yaml')
@@ -22,9 +25,6 @@ except ImportError as e:
         print(f"Import spec error: {import_error}")
 
 from config.settings import load_config, get_config
-
-print("Current Working Directory:", os.getcwd())
-print("Python Path:", sys.path)
 
 def test_manual_config_loading():
     config = load_config()
