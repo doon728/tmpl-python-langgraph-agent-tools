@@ -1,6 +1,7 @@
 import os
 import sys
 import importlib.util
+import yaml  # Move this to the top
 
 # Add parent directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -11,10 +12,13 @@ print("Python Path:", sys.path)
 # Comprehensive yaml import diagnostics
 def check_yaml_import():
     try:
-        import yaml
         print("✅ PyYAML imported successfully")
         print("PyYAML version:", yaml.__version__)
         print("PyYAML file location:", yaml.__file__)
+        return True
+    except AttributeError:
+        # Some versions of PyYAML might not have __version__
+        print("✅ PyYAML imported successfully (no version attribute)")
         return True
     except ImportError as e:
         print(f"❌ YAML Import Error: {e}")
