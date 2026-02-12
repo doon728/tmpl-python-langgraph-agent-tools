@@ -1,24 +1,25 @@
 import os
 import sys
-import subprocess
 
 # Add parent directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 print("Python Path:", sys.path)
-print("Poetry Virtual Environment:", os.environ.get('POETRY_ACTIVE'))
+print("Environment Variables:", os.environ)
 
 try:
     import yaml  # noqa: F401
     print("PyYAML successfully imported")
 except ImportError as e:
     print(f"YAML Import Error: {e}")
+    print("Attempting to diagnose PyYAML installation")
+    
     try:
-        result = subprocess.run(['poetry', 'add', 'pyyaml'], capture_output=True, text=True)
-        print("Poetry install output:", result.stdout)
-        print("Poetry install errors:", result.stderr)
-    except Exception as install_error:
-        print(f"Could not run poetry add: {install_error}")
+        import importlib.util
+        spec = importlib.util.find_spec('yaml')
+        print("PyYAML spec:", spec)
+    except Exception as import_error:
+        print(f"Import spec error: {import_error}")
 
 from config.settings import load_config, get_config
 
