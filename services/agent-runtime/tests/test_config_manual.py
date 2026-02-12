@@ -1,6 +1,18 @@
 import os
 import sys
-import yaml  # noqa: F401
+
+# Diagnostic import check
+try:
+    import yaml  # noqa: F401
+    print("PyYAML successfully imported")
+except ImportError as e:
+    print(f"YAML Import Error: {e}")
+    print("Python Path:", sys.path)
+    import pkg_resources
+    try:
+        print("Installed packages:", pkg_resources.working_set)
+    except Exception as pkg_err:
+        print(f"Could not list packages: {pkg_err}")
 
 from config.settings import load_config, get_config
 
