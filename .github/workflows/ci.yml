@@ -1,0 +1,13 @@
+name: Agent Tools CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    permissions:
+      contents: read
+      packages: write
+    uses: doon728/agent-platform-ci/.github/workflows/python-agent-tools.yml@main
