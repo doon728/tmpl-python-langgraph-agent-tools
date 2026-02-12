@@ -1,4 +1,4 @@
-import os
+
 import requests
 import logging
 from config.settings import get_config
