@@ -1,10 +1,19 @@
 import os
 import sys
 import importlib.util
-import yaml
 
 # Add parent directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Explicitly try to import yaml
+try:
+    import yaml
+except ImportError:
+    # Diagnostic information
+    print("Python Path:", sys.path)
+    spec = importlib.util.find_spec('yaml')
+    print("PyYAML spec:", spec)
+    raise
 
 from config.settings import load_config, get_config
 
@@ -24,14 +33,6 @@ def check_yaml_import():
         return True
     except ImportError as e:
         print(f"❌ YAML Import Error: {e}")
-        
-        # Additional import diagnostics
-        try:
-            spec = importlib.util.find_spec('yaml')
-            print("PyYAML spec:", spec)
-        except Exception as import_error:
-            print(f"Import spec error: {import_error}")
-        
         return False
 
 # Verify yaml import
