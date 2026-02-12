@@ -1,46 +1,16 @@
 import os
 import sys
-import importlib.util
 
-# Add parent directory to Python path
+# Explicitly modify Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Comprehensive system and import diagnostics
-print("Python Executable:", sys.executable)
-print("Python Version:", sys.version)
-print("Current Working Directory:", os.getcwd())
-print("Python Path:", sys.path)
-
-# Detailed YAML import diagnostic
-def diagnose_yaml_import():
-    try:
-        # Method 1: Standard import
-        import yaml
-        print("✅ PyYAML imported successfully (standard)")
-        print("PyYAML version:", yaml.__version__)
-        print("PyYAML file location:", yaml.__file__)
-        return yaml
-    except ImportError:
-        print("❌ Standard import failed")
-        
-        # Method 2: importlib import
-        try:
-            spec = importlib.util.find_spec('yaml')
-            if spec is not None:
-                print("PyYAML spec found:", spec)
-                yaml = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(yaml)
-                print("✅ PyYAML imported via importlib")
-                return yaml
-            else:
-                print("❌ No PyYAML spec found")
-        except Exception as e:
-            print(f"❌ Importlib method failed: {e}")
-    
-    return None
-
-# Attempt to import yaml
-yaml = diagnose_yaml_import()
+# Diagnostic import
+try:
+    import yaml
+except ImportError:
+    print("Failed to import yaml. Debugging information:")
+    print("Python Path:", sys.path)
+    raise
 
 from config.settings import load_config, get_config
 
