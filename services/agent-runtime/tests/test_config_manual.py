@@ -2,16 +2,15 @@ import os
 import sys
 import yaml  # noqa: F401
 
+from config.settings import load_config, get_config
+
 print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
-
-from config.settings import load_config, get_config
 
 def test_manual_config_loading():
     # Load default configuration
     config = load_config()
     print("Full Configuration:", config)
-
     # Test specific config retrievals
     print("Tool Gateway URL:", get_config('tool_gateway.url'))
     print("Environment:", get_config('environment'))
