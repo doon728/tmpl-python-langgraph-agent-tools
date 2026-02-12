@@ -1,4 +1,4 @@
-from tools.bindings import search_kb
+from src.tools.bindings import search_kb
 
 def execute(steps: list[str]) -> str:
     # Minimal: treat first step as a KB query
