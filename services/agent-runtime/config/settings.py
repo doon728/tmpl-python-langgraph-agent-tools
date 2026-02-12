@@ -10,21 +10,27 @@ def load_config(env: str = None) -> Dict[str, Any]:
     """
     Load configuration based on environment with robust import handling.
     """
-    # Attempt to import yaml with multiple methods
-    yaml = None
+    # Comprehensive yaml import diagnostics
     try:
         import yaml
-    except ImportError:
+        print(f"✅ PyYAML imported successfully from {yaml.__file__}")
+    except ImportError as e:
+        print(f"❌ Standard import failed: {e}")
+        
         try:
+            # Alternative import method
             spec = importlib.util.find_spec('yaml')
             if spec is not None:
+                print(f"PyYAML spec found: {spec}")
                 yaml = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(yaml)
+                print("✅ PyYAML imported via importlib")
             else:
-                raise ImportError("PyYAML module not found")
-        except Exception as e:
-            print(f"Failed to import yaml: {e}")
-            raise ConfigurationError(f"Could not import PyYAML: {e}")
+                print("❌ No PyYAML spec found")
+                raise
+        except Exception as alt_error:
+            print(f"❌ Alternative import method failed: {alt_error}")
+            raise ConfigurationError(f"Could not import PyYAML: {alt_error}")
     
     if env is None:
         env = os.environ.get('AGENT_ENV', 'dev')
