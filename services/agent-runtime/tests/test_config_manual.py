@@ -5,6 +5,9 @@ import importlib.util
 # Add parent directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Comprehensive yaml import diagnostics
+print("Python Version:", sys.version)
+print("Executable:", sys.executable)
 print("Current Working Directory:", os.getcwd())
 print("Python Path:", sys.path)
 
