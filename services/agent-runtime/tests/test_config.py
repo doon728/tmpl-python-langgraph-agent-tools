@@ -15,11 +15,16 @@ def test_get_config_default():
     assert value == 'default_value'
 
 def test_load_specific_env():
+    print("Current working directory:", os.getcwd())
+    print("Config files in directory:", os.listdir(os.path.join(os.getcwd(), 'config')))
+    
     os.environ['AGENT_ENV'] = 'staging'
     try:
         config = load_config()
+        print("Loaded config:", config)
         assert config['environment'] == 'staging'
     finally:
+        # Clean up environment variable
         del os.environ['AGENT_ENV']
 
 def test_config_file_not_found():
