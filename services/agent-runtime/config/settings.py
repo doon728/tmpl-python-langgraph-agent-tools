@@ -8,17 +8,18 @@ class ConfigurationError(Exception):
 
 def load_config(env: str = None) -> Dict[str, Any]:
     """
-    Load configuration based on environment.
+    Load configuration based on environment with robust import handling.
     """
     # Attempt to import yaml with multiple methods
+    yaml = None
     try:
         import yaml
     except ImportError:
         try:
-            yaml_spec = importlib.util.find_spec('yaml')
-            if yaml_spec is not None:
-                yaml = importlib.util.module_from_spec(yaml_spec)
-                yaml_spec.loader.exec_module(yaml)
+            spec = importlib.util.find_spec('yaml')
+            if spec is not None:
+                yaml = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(yaml)
             else:
                 raise ImportError("PyYAML module not found")
         except Exception as e:
