@@ -1,6 +1,8 @@
 import os
 import requests
+import logging
 from config.settings import get_config
+logger = logging.getLogger(__name__)
 
 def search_kb(query: str) -> list[str]:
     """
