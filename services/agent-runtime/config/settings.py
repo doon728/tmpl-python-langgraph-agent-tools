@@ -21,6 +21,8 @@ def load_config(env: str = None) -> Dict[str, Any]:
     
     print(f"Loading config from: {config_path}")
     print(f"Current environment: {env}")
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Files in config directory: {os.listdir(os.path.dirname(__file__))}")
     
     try:
         with open(config_path, 'r') as config_file:
