@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from src.tools.bindings import CONTRACT_VERSION, search_kb
+from src.tools.bindings import search_kb
 
 
 @patch("src.tools.bindings.requests.post")
