@@ -1,8 +1,6 @@
 from unittest.mock import patch
 
 from src.graph.build_graph import run_graph
-from src.tools.bindings import CONTRACT_VERSION
-
 
 @patch("src.tools.bindings.requests.post")
 def test_graph_runs(mock_post):
