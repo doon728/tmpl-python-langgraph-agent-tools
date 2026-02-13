@@ -14,16 +14,12 @@ def invoke_tool(req: ToolRequest):
         if req.tool_name == "search_kb":
             query = str(req.input.get("query", ""))
             out = search_kb(query)
-            return ToolResponse(tool_name=req.tool_name, ok=True, output=out)
+            return {"contract_version": "v1", "tool_name": tool_name, "ok": True, "output": output, "error": None}
 
         raise HTTPException(status_code=404, detail=f"Unknown tool: {req.tool_name}")
 
     except HTTPException:
         raise
     except Exception as e:
-        return ToolResponse(
-            tool_name=req.tool_name,
-            ok=False,
-            output={},
-            error={"type": "TOOL_ERROR", "message": str(e)},
-        )
+        return {"contract_version": "v1", "tool_name": tool_name, "ok": False, "output": None, "error": {"code":"TOOL_FAILED","message": str(e), "details": {}}}
+
