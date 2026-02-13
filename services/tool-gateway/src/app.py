@@ -5,12 +5,9 @@ from typing import Any, Dict, Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-
 CONTRACT_VERSION = "v1"
 
-
 app = FastAPI(title="Tool Gateway", version=CONTRACT_VERSION)
-
 
 # -----------------------
 # Request/Response Models
@@ -62,12 +59,12 @@ TOOL_REGISTRY = {
     "search_kb": search_kb,
 }
 
-
 # -----------------------
 # Endpoints
 # -----------------------
 @app.get("/health")
 def health() -> dict:
+    # Must match tests: r.json()["ok"] is True
     return {"ok": True}
 
 
@@ -79,6 +76,7 @@ def invoke_tool(req: ToolInvokeRequest) -> ToolInvokeResponse:
             contract_version=CONTRACT_VERSION,
             tool_name=req.tool_name,
             ok=False,
+            output=None,
             error=ToolError(
                 code="CONTRACT_VERSION_MISMATCH",
                 message=f"Expected {CONTRACT_VERSION}, got {req.contract_version}",
@@ -91,6 +89,7 @@ def invoke_tool(req: ToolInvokeRequest) -> ToolInvokeResponse:
             contract_version=CONTRACT_VERSION,
             tool_name=req.tool_name,
             ok=False,
+            output=None,
             error=ToolError(
                 code="UNKNOWN_TOOL",
                 message=f"Unknown tool: {req.tool_name}",
@@ -111,5 +110,6 @@ def invoke_tool(req: ToolInvokeRequest) -> ToolInvokeResponse:
             contract_version=CONTRACT_VERSION,
             tool_name=req.tool_name,
             ok=False,
+            output=None,
             error=ToolError(code="TOOL_EXECUTION_ERROR", message=str(e)),
         )
