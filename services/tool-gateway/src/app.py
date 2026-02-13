@@ -67,8 +67,8 @@ TOOL_REGISTRY = {
 # Endpoints
 # -----------------------
 @app.get("/health")
-def health() -> Dict[str, str]:
-    return {"status": "ok"}
+def health() -> dict:
+    return {"ok": True}
 
 
 @app.post("/tools/invoke", response_model=ToolInvokeResponse)
