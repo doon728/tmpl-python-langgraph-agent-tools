@@ -1,18 +1,23 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Callable
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 
-CONTRACT_VERSION = "v1"
+from src.contract import (
+    CONTRACT_VERSION,
+    ok_response,
+    err_response,
+)
 
 app = FastAPI(title="Tool Gateway", version=CONTRACT_VERSION)
+
 
 # -----------------------
 # Request/Response Models
 # -----------------------
-class ToolInvokeRequest(BaseModel):
+class ToolInvokeRequestModel(BaseModel):
     contract_version: str = CONTRACT_VERSION
     tool_name: str
     input: Dict[str, Any]
@@ -21,17 +26,24 @@ class ToolInvokeRequest(BaseModel):
     correlation_id: Optional[str] = None
 
 
-class ToolError(BaseModel):
-    code: str
-    message: str
+# -----------------------
+# Minimal auth/context middleware (stub)
+# -----------------------
+@app.middleware("http")
+async def log_context(request: Request, call_next: Callable):
+    # Prefer headers if present; fall back to body fields (handled in endpoint)
+    tenant_id = request.headers.get("x-tenant-id")
+    user_id = request.headers.get("x-user-id")
+    correlation_id = request.headers.get("x-correlation-id")
 
+    # Log is intentionally minimal; later you can swap to structured logging / OTel
+    print(
+        f"[tool-gateway] {request.method} {request.url.path} "
+        f"tenant={tenant_id} user={user_id} corr={correlation_id}"
+    )
 
-class ToolInvokeResponse(BaseModel):
-    contract_version: str = CONTRACT_VERSION
-    tool_name: str
-    ok: bool
-    output: Optional[Dict[str, Any]] = None
-    error: Optional[ToolError] = None
+    response = await call_next(request)
+    return response
 
 
 # -----------------------
@@ -42,7 +54,6 @@ def search_kb(input_data: Dict[str, Any]) -> Dict[str, Any]:
     if not query:
         return {"results": []}
 
-    # Stubbed KB result (replace later with real KB/DB integration)
     return {
         "results": [
             {
@@ -55,61 +66,74 @@ def search_kb(input_data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-TOOL_REGISTRY = {
+def get_member(input_data: Dict[str, Any]) -> Dict[str, Any]:
+    member_id = (input_data.get("member_id") or "").strip()
+    if not member_id:
+        return {"member": None}
+
+    # Stubbed member record
+    return {
+        "member": {
+            "member_id": member_id,
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "dob": "1990-01-01",
+            "plan": "SamplePlan",
+        }
+    }
+
+
+def write_case_note(input_data: Dict[str, Any]) -> Dict[str, Any]:
+    case_id = (input_data.get("case_id") or "").strip()
+    note = (input_data.get("note") or "").strip()
+
+    if not case_id or not note:
+        return {"written": False, "note_id": None}
+
+    # Stubbed “write” response
+    return {"written": True, "note_id": "note-001"}
+
+
+TOOL_REGISTRY: Dict[str, Any] = {
     "search_kb": search_kb,
+    "get_member": get_member,
+    "write_case_note": write_case_note,
 }
+
 
 # -----------------------
 # Endpoints
 # -----------------------
 @app.get("/health")
 def health() -> dict:
-    # Must match tests: r.json()["ok"] is True
-    return {"ok": True}
+    # Keep this stable for liveness probes + tests
+    return {"ok": True, "contract_version": CONTRACT_VERSION}
 
 
-@app.post("/tools/invoke", response_model=ToolInvokeResponse)
-def invoke_tool(req: ToolInvokeRequest) -> ToolInvokeResponse:
-    # Contract version check (keeps agent + gateway in sync)
+@app.post("/tools/invoke")
+def invoke_tool(req: ToolInvokeRequestModel) -> dict:
+    # Contract version check (agent + gateway must match)
     if req.contract_version != CONTRACT_VERSION:
-        return ToolInvokeResponse(
-            contract_version=CONTRACT_VERSION,
+        return err_response(
             tool_name=req.tool_name,
-            ok=False,
-            output=None,
-            error=ToolError(
-                code="CONTRACT_VERSION_MISMATCH",
-                message=f"Expected {CONTRACT_VERSION}, got {req.contract_version}",
-            ),
+            code="CONTRACT_VERSION_MISMATCH",
+            message=f"Expected {CONTRACT_VERSION}, got {req.contract_version}",
         )
 
     handler = TOOL_REGISTRY.get(req.tool_name)
     if handler is None:
-        return ToolInvokeResponse(
-            contract_version=CONTRACT_VERSION,
+        return err_response(
             tool_name=req.tool_name,
-            ok=False,
-            output=None,
-            error=ToolError(
-                code="UNKNOWN_TOOL",
-                message=f"Unknown tool: {req.tool_name}",
-            ),
+            code="UNKNOWN_TOOL",
+            message=f"Unknown tool: {req.tool_name}",
         )
 
     try:
         output = handler(req.input)
-        return ToolInvokeResponse(
-            contract_version=CONTRACT_VERSION,
-            tool_name=req.tool_name,
-            ok=True,
-            output=output,
-            error=None,
-        )
+        return ok_response(req.tool_name, output)
     except Exception as e:
-        return ToolInvokeResponse(
-            contract_version=CONTRACT_VERSION,
+        return err_response(
             tool_name=req.tool_name,
-            ok=False,
-            output=None,
-            error=ToolError(code="TOOL_EXECUTION_ERROR", message=str(e)),
+            code="TOOL_EXECUTION_ERROR",
+            message=str(e),
         )
