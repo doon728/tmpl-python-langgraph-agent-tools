@@ -15,5 +15,6 @@ COPY tests/ /app/tests
 # FastAPI default
 EXPOSE 8080
 
-CMD ["python", "-m", "src.app"]
+CMD ["poetry", "run", "uvicorn", "src.app:app", "--host", "0.0.0.0", "--port", "8080"]
+
 
